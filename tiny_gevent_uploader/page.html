@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <title>Tiny Gevent Uploader</title>
+        <script type="text/javascript" src="https://yastatic.net/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript">
+            function startProcess(processId) {
+                if (!window.WebSocket) {
+                    if (window.MozWebSocket) {
+                        window.WebSocket = window.MozWebSocket;
+                    } else {
+                        $('#messages').append("Your browser doesn't support WebSockets :(");
+                    }
+                }
+
+                ws = new WebSocket('ws://{{ addr }}/websocket?job_id=' + processId);
+                ws.onopen = function(evt) {
+                    console.log("WebSocket connection opened");
+                }
+
+                ws.onmessage = function(evt) {
+                    pComplete = evt.data + '%'
+                    $('.progress').css({
+                        width: pComplete,
+                        background: "#992233"
+                    }).html("processing: " + pComplete);
+                    console.log("processing data " + evt.data);
+                }
+
+                ws.onclose = function(evt) {
+                    $('#messages').append("WebSocket connection closed.");
+                }
+            }
+
+            $(document).ready(function(){
+                var processId = null;
+                var match = /id=(\d+)/.exec(window.location.search);
+                if (match != null) {
+                    processId = match[1];
+                }
+
+                if (processId == null) {
+                    $("#uploadSection").show();
+                    $(document.body).on('click', '#startButton' ,function(e){
+                        var formData = new FormData($("#mainForm")[0]);
+                        $.ajax({
+                            xhr: function () {
+                                var xhr = new window.XMLHttpRequest();
+                                xhr.upload.addEventListener("progress", function (evt) {
+                                    if (evt.lengthComputable) {
+                                        var percentComplete = evt.loaded / evt.total;
+                                        // console.log(percentComplete);
+                                        pComplete = percentComplete * 100 + '%'
+                                        $('.progress').css({
+                                            width: pComplete
+                                        }).html("uploading: " + pComplete);
+                                        if (percentComplete === 1) {
+                                            $('.progress').addClass('hide');
+                                        }
+                                    }
+                                }, true);
+                                xhr.addEventListener("progress", function (evt) {
+                                    if (evt.lengthComputable) {
+                                        var percentComplete = evt.loaded / evt.total;
+                                        // console.log(percentComplete);
+                                        pComplete = percentComplete * 100 + '%'
+                                        $('.progress').css({
+                                            width: pComplete
+                                        }).html("uploading: " + pComplete);
+                                    }
+                                }, true);
+                                return xhr;
+                            },
+                            type: 'POST',
+                            url: "/upload",
+                            mimeType: "multipart/form-data",
+                            data: formData,
+                            async: true,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                console.log("id: " + data);
+                                history.pushState({}, null, "/?id=" + data);
+                                $("#uploadSection").hide();
+                                startProcess(data);
+                            }
+                        });
+                        $('.progress').show();
+                    });
+                } else {
+                    startProcess(processId);
+                }
+            });
+        </script>
+    </head>
+<body>
+<div style="background:#448855; width:0px;" class="progress"></div>
+<div id="uploadSection" style="display:none; margin-top:3px;">
+    <form action="/upload" enctype="multipart/form-data" method="post" id="mainForm">
+        <input type="file" name="file">
+    </form>
+    <button id="startButton">Start</button>
+</div>
+<div id="messages"></div>
+</body>
+</html>
