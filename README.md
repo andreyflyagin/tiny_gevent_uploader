@@ -27,5 +27,5 @@ Try to upload some 5-10GB files, have fun.
 - [ ] Minimize lag before finish downloading and start processing.
 - [ ] Direct link for downloading.
 - [ ] Multi-process support.
-- [ ] Security, logging.
+- [ ] Security, logging, error catching, response to user.
 
