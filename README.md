@@ -5,11 +5,8 @@ Tiny gevent web server based on Flask with websocket progress bar. It can upload
 tested on ubuntu 14.04
 
 ```
-sudo apt-get install python-dev libssl-dev libpcre3 libpcre3-dev build-essential python-pip
+sudo apt-get install python-dev libssl-dev libpcre3 libpcre3-dev build-essential python-pip git
 pip install Flask Flask-uWSGI-WebSocket gevent
-
-# uwsgi must be installed with ssl support to work with websockets
-LDFLAGS="-L/usr/local/lib"  pip install uwsgi --no-use-wheel
 
 cd
 git clone https://github.com/andreyflyagin/tiny_gevent_uploader.git
