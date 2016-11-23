@@ -23,8 +23,8 @@ Try to upload some 5-10GB files, have fun.
 ## Future
 - [ ] Sharing upload progress by the same url.
 - [ ] Write tests.
-- [ ] Wrap into shell command like SimpleHTTPServer.
-- [ ] Minimize lag before finish downloading and start processing.
+- [ ] Wrap into the shell command like SimpleHTTPServer.
+- [ ] Minimize lag between finish downloading and start processing.
 - [ ] Direct link for downloading.
 - [ ] Multi-process support.
 - [ ] Security, logging, error catching, response to user.
